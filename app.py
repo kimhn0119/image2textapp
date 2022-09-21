@@ -39,6 +39,9 @@ def infer_t5(input):
 
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
+
+
+
 # https://huggingface.co/settings/tokens
 # https://huggingface.co/spaces/{username}/{space}/settings
 #API_TOKEN = os.getenv("BIG_GAN_TOKEN")
@@ -74,7 +77,15 @@ def t5():
     output = infer_t5(input)
 
     return jsonify({"output": output})
+@app.route("/hello", methods=['POST'])
+def hello():
+    request_data = request.get_json()
 
+    language = request_data['input']
+
+    output = infer_t5(language)
+
+    return jsonify({"output": output})
 
 @app.route("/query_emotion")
 def emotion():
