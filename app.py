@@ -5,8 +5,39 @@ from io import BytesIO
 
 from flask import Flask, jsonify, render_template, request, send_file
 
-from inference import infer_t5
-from dataset import query_emotion
+# from inference import infer_t5
+# from dataset import query_emotion
+
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+from datasets import load_dataset
+
+dataset = load_dataset("emotion", split="train")
+
+emotions = dataset.info.features["label"].names
+
+def query_emotion(start, end):
+    rows = dataset[start:end]
+    texts, labels = [rows[k] for k in rows.keys()]
+
+    observations = []
+
+    for i, text in enumerate(texts):
+        observations.append({
+            "text": text,
+            "emotion": emotions[labels[i]],
+        })
+
+    return observations
+
+tokenizer = T5Tokenizer.from_pretrained("t5-small")
+model = T5ForConditionalGeneration.from_pretrained("t5-small")
+
+
+def infer_t5(input):
+    input_ids = tokenizer(input, return_tensors="pt").input_ids
+    outputs = model.generate(input_ids)
+
+    return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 # https://huggingface.co/settings/tokens
 # https://huggingface.co/spaces/{username}/{space}/settings
