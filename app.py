@@ -5,8 +5,8 @@ from io import BytesIO
 
 from flask import Flask, jsonify, render_template, request, send_file
 
-from modules.inference import infer_t5
-from modules.dataset import query_emotion
+from inference import infer_t5
+from dataset import query_emotion
 
 # https://huggingface.co/settings/tokens
 # https://huggingface.co/spaces/{username}/{space}/settings
